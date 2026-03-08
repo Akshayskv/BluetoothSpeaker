@@ -6,13 +6,15 @@ class AudioController {
 
 public:
     enum class AvrcCommand {NEXT, PREVIOUS, PAUSE, PLAY};
-    AudioController(const char* name);
-    AudioController(const char* name, int outputPin, int wordSelect, int clock);
+    AudioController(const char* name, int enable);
+    AudioController(const char* name, int outputPin, int wordSelect, int clock, int enable);
+    ~AudioController();
     void init();
     void controlVolume(int amt);
     void mute();
     void unmute();
     void avrcOperation(AvrcCommand command);
+    void loop();
 private:
     void updateVolume(int val);
     inline static void volChangedCallback(int vol) {
@@ -39,4 +41,5 @@ private:
     std::string m_displayName;
     unsigned int m_currentVolume;
     static AudioController* s_instance;
+    int m_enable;
 };

@@ -2,14 +2,18 @@
 
 AudioController* AudioController::s_instance = nullptr;
 
-AudioController::AudioController(const char* name) : m_displayName{name}, m_sink{m_dataStream} {
+AudioController::AudioController(const char* name, int enable) : m_displayName{name}, m_sink{m_dataStream} {
+    m_enable = enable;
+    pinMode(m_enable, OUTPUT);
     s_instance = this;
     m_config = m_dataStream.defaultConfig(TX_MODE);
     m_sink.set_avrc_rn_volumechange(volChangedCallback);
     m_sink.set_on_audio_state_changed(statChangeCallback);
 }
 
-AudioController::AudioController(const char* name, int outputPin, int wordSelect, int clock) : m_displayName{name}, m_sink{m_dataStream} {
+AudioController::AudioController(const char* name, int outputPin, int wordSelect, int clock, int enable) : m_displayName{name}, m_sink{m_dataStream} {
+    m_enable = enable;
+    pinMode(m_enable, OUTPUT);
     s_instance = this;
     m_config = m_dataStream.defaultConfig(TX_MODE);
     m_config.pin_data = outputPin;
@@ -19,7 +23,11 @@ AudioController::AudioController(const char* name, int outputPin, int wordSelect
     m_sink.set_on_audio_state_changed(statChangeCallback);
 }
 
+AudioController::~AudioController() {
+    digitalWrite(m_enable, LOW);
+}
 void AudioController::init() {
+    digitalWrite(m_enable, HIGH);
     m_dataStream.begin(m_config);
     m_sink.start(m_displayName.c_str());
 }
@@ -36,11 +44,11 @@ void AudioController::controlVolume(int amt) {
 void AudioController::mute() {
     m_sink.set_volume(0);
     delay(30);
-    digitalWrite(16, LOW);
+    digitalWrite(m_enable, LOW);
 }
 
 void AudioController::unmute() {
-    digitalWrite(16, HIGH);
+    digitalWrite(m_enable, HIGH);
     delay(10);
     m_sink.set_volume(m_currentVolume);
 }
