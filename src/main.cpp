@@ -18,9 +18,28 @@ void setup() {
 }
 
 void loop() {
-    auto ges = sens.getGesture();
-    if(ges != sens.eGestureNone) {
-        String desc = sens.gestureDescription(ges);
-        Serial.print("gesture: "); Serial.println(desc);
+    auto gestrue = sens.getGesture();
+    switch (gestrue)
+    {
+    case DFRobot_PAJ7620U2::eGestureRight:
+        con.controlVolume(4);
+        break;
+    case DFRobot_PAJ7620U2::eGestureLeft:
+        con.controlVolume(-4);
+        break;
+    case DFRobot_PAJ7620U2::eGestureWaveSlowlyLeftRight:
+        con.avrcOperation(AudioController::AvrcCommand::NEXT);
+        break;
+    case DFRobot_PAJ7620U2::eGestureWaveSlowlyUpDown:
+        con.avrcOperation(AudioController::AvrcCommand::PREVIOUS);
+        break;
+    case DFRobot_PAJ7620U2::eGestureUp:
+        con.avrcOperation(AudioController::AvrcCommand::PAUSE);
+        break;
+    case DFRobot_PAJ7620U2::eGestureDown:
+        con.avrcOperation(AudioController::AvrcCommand::PLAY);
+        break;
+    default:
+        break;
     }
 }
